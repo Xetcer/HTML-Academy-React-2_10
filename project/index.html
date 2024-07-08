@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Игра Мемори</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script src="vendor/react.development.js"></script>
+  <script src="vendor/react-dom.development.js"></script>
+  <script src="vendor/babel.min.js"></script>
+  <script src="data.js"></script>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel">
+    const container = document.getElementById('root');
+    const root = ReactDOM.createRoot(container);
+    root.render(<App images={images}/>);
+
+    function App({images = []}) {
+      const [stepCounter, setStepCounter] = React.useState(0);
+      const updStepHandler = ()=>{
+        setStepCounter((current)=>current+1);
+      }
+      const finishedItems = [];
+      // TODO: добавьте состояние для счётчика шагов
+      return (
+        <section className="game container">
+          <div className="steps">Шаг {stepCounter}</div>
+          <Grid images={images} finishedItems={finishedItems} stepCntr_CB={updStepHandler}/>
+        </section>
+      );
+    }
+
+    function Grid({images = [], finishedItems = [], stepCntr_CB}) {
+      const [openCardListIds, setCardList] = React.useState([]);
+      // TODO: добавьте состояние списка открытых карточек
+      const cardClickHandler = (id)=>{
+        if(!openCardListIds.includes(id)){
+          setCardList((item)=>[...item, id]);
+          stepCntr_CB();
+        }
+      }
+
+      return (
+        <ul className="cards">
+          {images.map((item) => (
+            <Card
+              key={item.id}
+              id ={item.id}  
+              url={item.url}
+              description={item.description}
+              isVisible={openCardListIds.includes(item.id)}
+              isFinished={finishedItems.includes(item.id)}
+              cardClick={cardClickHandler}
+            />
+          ))}
+        </ul>
+      );
+    }
+
+    function Card({url, description, isVisible, isFinished, cardClick, id}) {
+      // TODO: добавьте обработку события
+      const className = `${
+        isVisible ? 'card-show' : ''
+      } ${
+        isFinished ? 'card-finished' : ''
+      }`;
+
+      const cardClickHandler = ()=>{
+        if(isFinished||isVisible){
+          return;
+        }
+        //console.log(`карточка выбрана: ${ id }`);
+        cardClick(id)
+      }
+
+      return (
+        <li className={`card ${className}`} onClick={cardClickHandler}>
+          <img
+            width="204" height="144"
+            src={url}
+            alt={description}
+          />
+        </li>
+      );
+    }
+  </script>
+</body>
+</html>
